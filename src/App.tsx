@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, ChangeEvent } from "react";
+import { TextField, Box, Typography, Button } from "@mui/material";
+import { isNumber } from "./utils/isNumber";
+import DialogBox from "./components/DialogBox";
 
-function App() {
+const App: React.FC = () => {
+  const [messages, setMessages] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [error, setError] = useState(false);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputValue(value);
+    setError(!isNumber(value));
+  };
+
+  const handleSendMessage = () => {
+    if (inputValue.trim() !== "") {
+      setMessages((prevMessages) => [...prevMessages, inputValue]);
+      setInputValue("");
+    }
+  };
+
+  console.log(messages);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Box>
+      <DialogBox messages={messages} />
+      <Box display="flex" alignItems="center" marginTop={2}>
+        <TextField
+          label="Type your message"
+          variant="outlined"
+          fullWidth
+          value={inputValue}
+          onChange={handleInputChange}
+          inputProps={{
+            inputMode: "numeric",
+            pattern: "[0-9]*",
+          }}
+          error={error}
+          helperText={error ? "Please enter a valid number" : ""}
+        />
+        <Button
+          variant="contained"
+          onClick={handleSendMessage}
+          disabled={!inputValue.trim() || error}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          Send
+        </Button>
+      </Box>
+    </Box>
   );
-}
+};
 
 export default App;
